@@ -64,7 +64,7 @@ Route::get('/source', function () {
 
 Route::post('/webhook', function () {
     PaymongoEvent::dispatch([
-        'from' => 'paymongo.webhook (POST)',
+        'from' => 'paymongo.webhook',
         'data' => request()->all()
     ]);
 
