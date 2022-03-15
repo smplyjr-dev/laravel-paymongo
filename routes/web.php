@@ -25,4 +25,4 @@ Route::post('/webhook', function () {
     ]);
 
     return response()->json(true, 200);
-})->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class]);
+});
