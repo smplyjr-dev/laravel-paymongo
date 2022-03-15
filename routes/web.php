@@ -11,8 +11,18 @@
 |
 */
 
+use App\Events\PaymongoEvent;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::post('/webhook', function () {
+    PaymongoEvent::dispatch([
+        'from' => 'paymongo.webhook (POST)',
+        'data' => request()->all()
+    ]);
+
+    return response()->json(true, 200);
+})->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class]);
