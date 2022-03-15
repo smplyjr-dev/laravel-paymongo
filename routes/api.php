@@ -42,8 +42,8 @@ Route::get('/source', function () {
                 'amount' => 10000,
                 'currency' => 'PHP',
                 'redirect' => [
-                    'success' => url('/source') . "/success",
-                    'failed'  => url('/source') . "/failed",
+                    'success' => url('/api/source') . "/success",
+                    'failed'  => url('/api/source') . "/failed",
                 ],
                 'type' => 'gcash',
             ]
