@@ -1,7 +1,5 @@
 <?php
 
-use Illuminate\Http\Request;
-
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -13,26 +11,39 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
+use App\Events\PaymongoEvent;
+use Illuminate\Support\Facades\Route;
+
+Route::get('/source/success', function () {
+    PaymongoEvent::dispatch([
+        'from' => 'paymongo.source.success',
+        'data' => request()->all()
+    ]);
 });
 
-Route::get('/paymongo/webhook', function () {
+Route::get('/source/failed', function () {
+    PaymongoEvent::dispatch([
+        'from' => 'paymongo.source.failed',
+        'data' => request()->all()
+    ]);
 });
 
-Route::post('/paymongo/source', function () {
+Route::get('/source', function () {
+    PaymongoEvent::dispatch([
+        'from' => 'paymongo.source',
+        'data' => request()->all()
+    ]);
+
     $client = new \GuzzleHttp\Client();
 
-    $amount = 10000;
-    $url  = url('/payment');
     $body = [
         'data' => [
             'attributes' => [
-                'amount' => $amount,
+                'amount' => 10000,
                 'currency' => 'PHP',
                 'redirect' => [
-                    'success' => "$url/success",
-                    'failed'  => "$url/failed",
+                    'success' => url('/source') . "/success",
+                    'failed'  => url('/source') . "/failed",
                 ],
                 'type' => 'gcash',
             ]
@@ -42,11 +53,20 @@ Route::post('/paymongo/source', function () {
         'body'    => json_encode($body),
         'headers' => [
             'Accept'        => 'application/json',
-            'Authorization' => 'Basic cGtfdGVzdF84MjJFZ2NLbzFHNzYxemU0ejFBS3RxdzI6YXNk',
+            'Authorization' => 'Basic ' . env('PM_PUBLIC'),
             'Content-Type'  => 'application/json',
         ],
     ]);
     $result = json_decode($init->getBody());
 
     return response()->json($result, 200);
+});
+
+Route::post('/webhook', function () {
+    PaymongoEvent::dispatch([
+        'from' => 'paymongo.webhook (POST)',
+        'data' => request()->all()
+    ]);
+
+    return response()->json(true, 200);
 });
