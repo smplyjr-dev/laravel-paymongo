@@ -71,6 +71,8 @@ Route::get('/webhook', function () {
         'from' => 'paymongo.source (GET)',
         'data' => request()->all()
     ]);
+
+    return response()->json(true, 200);
 });
 
 Route::post('/webhook', function () {
@@ -78,4 +80,6 @@ Route::post('/webhook', function () {
         'from' => 'paymongo.source (POST)',
         'data' => request()->all()
     ]);
+
+    return response()->json(true, 200);
 });
